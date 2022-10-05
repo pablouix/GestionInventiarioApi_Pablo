@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using GestionInventiarioApi_Pablo.Models;
 
 namespace GestionInventiarioApi_Pablo.Controllers
 {
@@ -12,22 +13,47 @@ namespace GestionInventiarioApi_Pablo.Controllers
         public dynamic ListarArticulos()
         {
 
+            List<Articulos> articulos = new List<Articulos>
+            {
+                new Articulos
+                {
+                    articuloId = 1,
+                    descripcion = "Moto",
+                    marca = "GT",
+                    existencia = 1
+                },
 
-           // return new { id = 1, descripcion = "Celular"};
+                new Articulos
+                {
+                    articuloId = 1,
+                    descripcion = "Moto",
+                    marca = "HL",
+                    existencia = 23
+                }
+
+            };
 
 
-
+            return articulos;
         }
 
 
-        /*
+        
         [HttpPost]
         [Route("Guardar")]
-        public dynamic ListarArticulos()
+        public dynamic ListarArticulos(Articulos articulos)
         {
+             articulos.articuloId = 3;
 
+            return new
+            {
+                success = true,
+                message = "Articulo registrado..",
+                result = articulos
+                
+            };
         }
-        */
+        
 
     }
 }
