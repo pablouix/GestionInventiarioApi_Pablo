@@ -1,100 +1,105 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using GestionInventiarioApi_Pablo.Models;
+using GestionInventiarioApi_Pablo.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace GestionInventiarioApi_Pablo.Controllers
 {
     //direccion/articulos/Listar
     [ApiController]
-    [Route("articulos")]
+    [Route("api/[controller]")]
     public class ArticulosController : ControllerBase
     {
-        [HttpGet]
-        [Route("Listar")]
-        public dynamic ListarArticulos()
+        private readonly Contexto _context;
+
+        public ArticulosController(Contexto context)
         {
+            _context = context;
+        }
 
-            List<Articulos> articulos = new List<Articulos>
+        // GET: api/Articulos
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Articulos>>> GetArticulos()
+        {
+            return await _context.Articulos.ToListAsync();
+        }
+
+        // GET: api/Articulos/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Articulos>> GetArticulos(int id)
+        {
+            var articulos = await _context.Articulos.FindAsync(id);
+
+            if (articulos == null)
             {
-                new Articulos
-                {
-                    articuloId = 1,
-                    descripcion = "Moto",
-                    marca = "GT",
-                    existencia = 1
-                },
-
-                new Articulos
-                {
-                    articuloId = 1,
-                    descripcion = "Moto",
-                    marca = "HL",
-                    existencia = 23
-                }
-
-            };
-
+                return NotFound();
+            }
 
             return articulos;
         }
 
-
-        [HttpGet]
-        [Route("ListarId")]
-        public dynamic ListarArticulosId(int id)
+        // PUT: api/Articulos/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutArticulos(int id, Articulos articulos)
         {
-            return new Articulos
+            if (id != articulos.articuloId)
             {
-                articuloId = id,
-                descripcion = "Moto",
-                marca = "GP",
-                existencia = 3
-            };
-        }
-
-
-
-        [HttpPost]
-        [Route("Guardar")]
-        public dynamic ListarArticulos(Articulos articulos)
-        {
-             articulos.articuloId = 3;
-
-            return new
-            {
-                success = true,
-                message = "Articulo registrado..",
-                result = articulos
-                
-            };
-        }
-
-
-        [HttpPost]
-        [Route("Eliminar")]
-        public dynamic eliminarArticulo(Articulos artoculos)
-        {
-          string token =  Request.Headers.Where(x => x.Key == "Authorization").FirstOrDefault().Value;
-
-            if(token != "2")
-            {
-                return new
-                {
-                    success = true,
-                    message = "token incorrecto..",
-                    result = ""
-
-                };
+                return BadRequest();
             }
 
-            return new
-            {
-                success = true,
-                message = "Articulo eliminado..",
-                result = ""
+            _context.Entry(articulos).State = EntityState.Modified;
 
-            };
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ArticulosExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
+        // POST: api/Articulos
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<Articulos>> PostArticulos(Articulos articulos)
+        {
+            _context.Articulos.Add(articulos);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetArticulos", new { id = articulos.articuloId }, articulos);
+        }
+
+        // DELETE: api/Articulos/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteArticulos(int id)
+        {
+            var articulos = await _context.Articulos.FindAsync(id);
+            if (articulos == null)
+            {
+                return NotFound();
+            }
+
+            _context.Articulos.Remove(articulos);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        private bool ArticulosExists(int id)
+        {
+            return _context.Articulos.Any(e => e.articuloId == id);
+        }
 
 
     }
