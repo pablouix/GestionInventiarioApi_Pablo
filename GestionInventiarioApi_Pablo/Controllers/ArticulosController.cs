@@ -38,7 +38,21 @@ namespace GestionInventiarioApi_Pablo.Controllers
         }
 
 
-        
+        [HttpGet]
+        [Route("ListarId")]
+        public dynamic ListarArticulosId(int id)
+        {
+            return new Articulos
+            {
+                articuloId = id,
+                descripcion = "Moto",
+                marca = "GP",
+                existencia = 3
+            };
+        }
+
+
+
         [HttpPost]
         [Route("Guardar")]
         public dynamic ListarArticulos(Articulos articulos)
@@ -53,7 +67,35 @@ namespace GestionInventiarioApi_Pablo.Controllers
                 
             };
         }
-        
+
+
+        [HttpPost]
+        [Route("Eliminar")]
+        public dynamic eliminarArticulo(Articulos artoculos)
+        {
+          string token =  Request.Headers.Where(x => x.Key == "Authorization").FirstOrDefault().Value;
+
+            if(token != "2")
+            {
+                return new
+                {
+                    success = true,
+                    message = "token incorrecto..",
+                    result = ""
+
+                };
+            }
+
+            return new
+            {
+                success = true,
+                message = "Articulo eliminado..",
+                result = ""
+
+            };
+        }
+
+
 
     }
 }
