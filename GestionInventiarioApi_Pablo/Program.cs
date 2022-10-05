@@ -1,3 +1,6 @@
+using GestionInventiarioApi_Pablo.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +11,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+
+
+var ConStr = builder.Configuration.GetConnectionString("ConStr");
+
+builder.Services.AddDbContext<Contexto>(options =>
+    options.UseSqlite(ConStr)
+);
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
